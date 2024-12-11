@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -12,14 +14,20 @@ export default function Home() {
   return (
     <div>
       <h2>Products</h2>
-      <ul>
-        {products.map((product) => (
-          <li key={product.product_id}>
-            <img src={`${import.meta.env.VITE_APP_HOST}/public/images/${product.image_filename}`} alt={product.name} />
-            <p>{product.name} - ${product.cost}</p>
-          </li>
-        ))}
-      </ul>
+        <ul>
+            {products.map((product) => (
+                <li key={product.product_id}>
+                    <Link to={`/details/${product.product_id}`}>
+                        <img
+                        src={`${import.meta.env.VITE_APP_HOST}/public/images/${product.image_filename}`}
+                        alt={product.name}
+                        />
+                        <p>{product.name} - ${product.cost}</p>
+                    </Link>
+                </li>
+            ))}
+        </ul>
+
     </div>
   );
 }
