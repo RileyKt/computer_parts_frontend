@@ -28,18 +28,40 @@ export default function Details() {
   };
 
   if (!product) return <p>Loading...</p>;
-
   return (
-    <div>
-      <img
-        src={`${import.meta.env.VITE_APP_HOST}/public/images/${product.image_filename}`}
-        alt={product.name}
-      />
-      <h2>{product.name}</h2>
-      <p>{product.description}</p>
-      <p>Price: ${product.cost}</p>
-      <button onClick={addToCart}>Add to Cart</button>
-      <Link to="/">Go Back</Link>
+    <div className="container">
+      <h1 className="text-center mb-4">{product.name}</h1>
+      <div className="row">
+        <div className="col-md-6">
+          {product.image_filename ? (
+            <img
+              src={`${import.meta.env.VITE_APP_HOST}/public/images/${product.image_filename}`}
+              className="img-fluid"
+              alt={product.name}
+            />
+          ) : (
+            <p>No Image Available</p>
+          )}
+        </div>
+        <div className="col-md-6">
+          <table className="table table-bordered">
+            <tbody>
+              <tr>
+                <th>Description</th>
+                <td>{product.description}</td>
+              </tr>
+              <tr>
+                <th>Price</th>
+                <td>${product.cost}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button onClick={addToCart} className="btn btn-success me-2">Add to Cart</button>
+          <Link to="/" className="btn btn-secondary">Go Back</Link>
+        </div>
+      </div>
     </div>
   );
+  
+  
 }

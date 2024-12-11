@@ -66,3 +66,35 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+/* Add this to your index.css */
+.table td,
+.table th {
+  vertical-align: middle; /* Vertically center content */
+}
+
+.table img {
+  max-width: 120px; /* Limit image width */
+  height: auto;
+}
+
+.table th {
+  text-align: center; /* Center-align headers */
+}
+
+.table-responsive {
+  padding: 0 20px; /* Add some padding to the table container */
+}
+
+.table td {
+  padding: 15px 20px; /* Increase cell padding for better spacing */
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.container {
+  max-width: 1200px; /* Limit container width */
+  margin: auto;
+}

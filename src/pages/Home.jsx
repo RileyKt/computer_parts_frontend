@@ -12,22 +12,46 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
+    <div className="container">
       <h2>Products</h2>
-        <ul>
+      <div className="table-responsive">
+        <table className="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
             {products.map((product) => (
-                <li key={product.product_id}>
-                    <Link to={`/details/${product.product_id}`}>
-                        <img
-                        src={`${import.meta.env.VITE_APP_HOST}/public/images/${product.image_filename}`}
-                        alt={product.name}
-                        />
-                        <p>{product.name} - ${product.cost}</p>
-                    </Link>
-                </li>
+              <tr key={product.product_id}>
+                <td style={{ width: '150px', textAlign: 'center' }}>
+                  {product.image_filename ? (
+                    <img
+                      src={`${import.meta.env.VITE_APP_HOST}/public/images/${product.image_filename}`}
+                      alt={product.name}
+                      className="img-thumbnail"
+                    />
+                  ) : (
+                    <p>No Image</p>
+                  )}
+                </td>
+                <td>{product.name}</td>
+                <td>${product.cost.toFixed(2)}</td>
+                <td>
+                  <Link to={`/details/${product.product_id}`} className="btn btn-primary btn-sm">
+                    View Details
+                  </Link>
+                </td>
+              </tr>
             ))}
-        </ul>
-
+          </tbody>
+        </table>
+      </div>
     </div>
   );
+  
+  
 }
