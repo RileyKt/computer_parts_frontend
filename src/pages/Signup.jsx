@@ -1,74 +1,95 @@
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    first_name: '',
+    last_name: '',
+  });
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const onSubmit = async (data) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_HOST}/api/users/signup`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
-        alert('Signup successful! Redirecting to login...');
-        navigate('/login');
-      } else {
-        const errorData = await response.json();
-        alert(errorData.error || 'Signup failed. Please try again.');
+      if (!response.ok) {
+        const { error } = await response.json();
+        throw new Error(error || 'Signup failed');
       }
+
+      // Navigate to the login page after a successful signup
+      alert('Account created successfully!');
+      navigate('/login');
     } catch (error) {
-      console.error('Error during signup:', error);
-      alert('An error occurred. Please try again later.');
+      setError(error.message);
     }
   };
 
   return (
-    <div className="container">
+    <div>
       <h1>Signup</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label>Email</label>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <label>
+          Email:
           <input
             type="email"
-            {...register('email', { required: 'Email is required' })}
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
           />
-          {errors.email && <p>{errors.email.message}</p>}
-        </div>
-
-        <div>
-          <label>Password</label>
+        </label>
+        <label>
+          Password:
           <input
             type="password"
-            {...register('password', {
-              required: 'Password is required',
-              minLength: { value: 8, message: 'Password must be at least 8 characters long' },
-            })}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
           />
-          {errors.password && <p>{errors.password.message}</p>}
-        </div>
-
-        <div>
-          <label>First Name</label>
+        </label>
+        <label>
+          First Name:
           <input
             type="text"
-            {...register('first_name', { required: 'First name is required' })}
+            name="first_name"
+            value={formData.first_name}
+            onChange={handleChange}
+            required
           />
-          {errors.first_name && <p>{errors.first_name.message}</p>}
-        </div>
-
-        <div>
-          <label>Last Name</label>
+        </label>
+        <label>
+          Last Name:
           <input
             type="text"
-            {...register('last_name', { required: 'Last name is required' })}
+            name="last_name"
+            value={formData.last_name}
+            onChange={handleChange}
+            required
           />
-          {errors.last_name && <p>{errors.last_name.message}</p>}
-        </div>
-
+        </label>
         <button type="submit">Sign Up</button>
       </form>
     </div>

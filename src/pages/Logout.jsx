@@ -1,19 +1,20 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 export default function Logout() {
   const navigate = useNavigate();
+  const { setIsLoggedIn } = useOutletContext();
 
   useEffect(() => {
     const logout = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_HOST}/api/users/logout`, {
           method: 'POST',
-          credentials: 'include', 
+          credentials: 'include',
         });
 
         if (response.ok) {
-          alert('You have been logged out.');
+          setIsLoggedIn(false);
           navigate('/login');
         } else {
           alert('Logout failed. Please try again.');
@@ -25,13 +26,13 @@ export default function Logout() {
     };
 
     logout();
-  }, [navigate]);
+  }, [navigate, setIsLoggedIn]);
 
   return (
-    <div className="container">
+    <div>
       <h1>You have been logged out.</h1>
       <p>
-        <a href="/login">Login</a> | <a href="/">Home</a>
+        <Link to="/login">Login</Link> | <Link to="/">Home</Link>
       </p>
     </div>
   );

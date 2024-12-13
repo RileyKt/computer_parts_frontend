@@ -1,21 +1,15 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Nav from './ui/Nav';
 
+export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-function App() {
   return (
-    <div className="container mt-4">
-      <Nav />
-      <h1 className="text-center mb-4">Welcome to the Online Computer Store</h1>
-      <Outlet />
+    <div>
+      <Nav isLoggedIn={isLoggedIn} />
+      <h1>Welcome to the Online Computer Store</h1>
+      <Outlet context={{ isLoggedIn, setIsLoggedIn }} />
     </div>
   );
 }
-
-
-export default App;

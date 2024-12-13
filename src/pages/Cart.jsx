@@ -38,61 +38,42 @@ export default function Cart() {
         .catch((error) => console.error('Error fetching cart products:', error));
     }
   }, []);
-  
+
+  const removeFromCart = (id) => {
+    const cart = Cookies.get('cart') || '';
+    const updatedCart = cart.split(',').filter((itemId) => Number(itemId) !== id).join(',');
+    Cookies.set('cart', updatedCart, { expires: 7 });
+    setCartProducts(cartProducts.filter((product) => product.product_id !== id));
+  };
 
   const subTotal = cartProducts.reduce((sum, product) => sum + product.total, 0);
+  const tax = subTotal * 0.15; 
+  const grandTotal = subTotal + tax;
 
   if (cartProducts.length === 0) return <p>Your cart is empty.</p>;
+
   return (
-    <div className="container">
-      <h1 className="text-center mb-4">Your Cart</h1>
-      {cartProducts.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <div className="table-responsive">
-          <table className="table table-hover align-middle">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cartProducts.map((product) => (
-                <tr key={product.product_id}>
-                  <td style={{ width: '120px' }}>
-                    <img
-                      src={`${import.meta.env.VITE_APP_HOST}/public/images/${product.image_filename}`}
-                      alt={product.name}
-                      className="img-thumbnail"
-                      style={{ width: '100px' }}
-                    />
-                  </td>
-                  <td>{product.name}</td>
-                  <td>${product.cost}</td>
-                  <td>{product.quantity}</td>
-                  <td>${product.total.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan="4" className="text-end"><strong>Subtotal:</strong></td>
-                <td><strong>${subTotal.toFixed(2)}</strong></td>
-              </tr>
-            </tfoot>
-          </table>
+    <div>
+      <h1>Your Cart</h1>
+      {cartProducts.map((product) => (
+        <div key={product.product_id}>
+          <img
+            src={`${import.meta.env.VITE_APP_HOST}/public/images/${product.image_filename}`}
+            alt={product.name}
+            style={{ width: '100px' }}
+          />
+          <h2>{product.name}</h2>
+          <p>Price: ${product.cost}</p>
+          <p>Quantity: {product.quantity}</p>
+          <p>Total: ${product.total.toFixed(2)}</p>
+          <button onClick={() => removeFromCart(product.product_id)}>Remove</button>
         </div>
-      )}
-      <div className="text-center mt-4">
-        <Link to="/" className="btn btn-primary me-2">Continue Shopping</Link>
-        <Link to="/checkout" className="btn btn-success">Complete Purchase</Link>
-      </div>
+      ))}
+      <h3>Subtotal: ${subTotal.toFixed(2)}</h3>
+      <h3>Tax: ${tax.toFixed(2)}</h3>
+      <h3>Total: ${grandTotal.toFixed(2)}</h3>
+      <Link to="/">Continue Shopping</Link>
+      <Link to="/checkout">Complete Purchase</Link>
     </div>
   );
-  
-  
 }

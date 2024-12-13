@@ -1,57 +1,89 @@
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 export default function Login() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  // Access the setIsLoggedIn method passed via Outlet context
+  const setIsLoggedIn = useOutletContext(); 
 
-  const onSubmit = async (data) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    console.log('Attempting login with:', formData);
+
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_HOST}/api/users/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
-        alert('Login successful! Redirecting to home...');
-        navigate('/');
-      } else {
-        const errorData = await response.json();
-        alert(errorData.error || 'Login failed. Please try again.');
+      console.log('Response Status:', response.status);
+
+      if (!response.ok) {
+        const { error } = await response.json();
+        console.error('Backend Error:', error);
+        throw new Error(error || 'An error occurred. Please try again later.');
       }
+
+      const data = await response.json();
+      console.log('Login successful:', data);
+
+      // Set the user as logged in
+      setIsLoggedIn(true);
+
+      // Navigate to the home page
+      navigate('/');
     } catch (error) {
-      console.error('Error during login:', error);
-      alert('An error occurred. Please try again later.');
+      console.error('Login Error:', error.message);
+      setError(error.message);
     }
   };
 
   return (
-    <div className="container">
+    <div>
       <h1>Login</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit}>
         <div>
-          <label>Email</label>
+          <label htmlFor="email">Email:</label>
           <input
             type="email"
-            {...register('email', { required: 'Email is required' })}
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            required
           />
-          {errors.email && <p>{errors.email.message}</p>}
         </div>
-
         <div>
-          <label>Password</label>
+          <label htmlFor="password">Password:</label>
           <input
             type="password"
-            {...register('password', { required: 'Password is required' })}
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            required
           />
-          {errors.password && <p>{errors.password.message}</p>}
         </div>
-
+        {error && <p style={{ color: 'red' }}>{error}</p>}
         <button type="submit">Login</button>
       </form>
       <p>
-        Don't have an account? <a href="/signup">Sign up here</a>.
+        Don't have an account? <a href="/signup">Sign up</a>
       </p>
     </div>
   );
