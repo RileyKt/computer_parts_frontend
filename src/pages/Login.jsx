@@ -1,27 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  // Access the setIsLoggedIn method passed via Outlet context
-  const setIsLoggedIn = useOutletContext(); 
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  const { setIsLoggedIn } = useOutletContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-
-    console.log('Attempting login with:', formData);
-
+  
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_HOST}/api/users/login`, {
         method: 'POST',
@@ -30,61 +19,34 @@ export default function Login() {
         },
         body: JSON.stringify(formData),
       });
-
-      console.log('Response Status:', response.status);
-
+  
       if (!response.ok) {
         const { error } = await response.json();
-        console.error('Backend Error:', error);
-        throw new Error(error || 'An error occurred. Please try again later.');
+        throw new Error(error || 'Login failed');
       }
-
-      const data = await response.json();
-      console.log('Login successful:', data);
-
-      // Set the user as logged in
+  
+      const { customer_id } = await response.json(); 
+      // Store in cookies
+      Cookies.set('customer_id', customer_id, { expires: 7 }); 
+  
       setIsLoggedIn(true);
-
-      // Navigate to the home page
       navigate('/');
     } catch (error) {
       console.error('Login Error:', error.message);
-      setError(error.message);
+      alert(error.message);
     }
   };
+  
 
   return (
     <div>
       <h1>Login</h1>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <label>Email: <input type="email" name="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required /></label>
+        <label>Password: <input type="password" name="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required /></label>
         <button type="submit">Login</button>
       </form>
-      <p>
-        Don't have an account? <a href="/signup">Sign up</a>
-      </p>
     </div>
   );
 }

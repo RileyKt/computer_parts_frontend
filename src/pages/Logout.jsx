@@ -15,12 +15,11 @@ export default function Logout() {
 
         if (response.ok) {
           setIsLoggedIn(false);
-          navigate('/login');
+          navigate('/');
         } else {
           alert('Logout failed. Please try again.');
         }
-      } catch (error) {
-        console.error('Error during logout:', error);
+      } catch (err) {
         alert('An error occurred. Please try again later.');
       }
     };
@@ -28,12 +27,5 @@ export default function Logout() {
     logout();
   }, [navigate, setIsLoggedIn]);
 
-  return (
-    <div>
-      <h1>You have been logged out.</h1>
-      <p>
-        <Link to="/login">Login</Link> | <Link to="/">Home</Link>
-      </p>
-    </div>
-  );
+  return <h1>Logging out...</h1>;
 }

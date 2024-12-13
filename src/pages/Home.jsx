@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
+import Cookies from 'js-cookie';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -10,6 +10,13 @@ export default function Home() {
       .then((response) => response.json())
       .then((data) => setProducts(data));
   }, []);
+
+  const addToCart = (id) => {
+    const cart = Cookies.get('cart') || '';
+    const updatedCart = cart ? `${cart},${id}` : id;
+    Cookies.set('cart', updatedCart, { expires: 7 });
+    alert('Product added to cart!');
+  };
 
   return (
     <div className="container">
@@ -41,9 +48,20 @@ export default function Home() {
                 <td>{product.name}</td>
                 <td>${product.cost.toFixed(2)}</td>
                 <td>
-                  <Link to={`/details/${product.product_id}`} className="btn btn-primary btn-sm">
-                    View Details
-                  </Link>
+                  <div className="d-flex justify-content-between">
+                    <Link
+                      to={`/details/${product.product_id}`}
+                      className="btn btn-primary btn-sm me-2"
+                    >
+                      View Details
+                    </Link>
+                    <button
+                      onClick={() => addToCart(product.product_id)}
+                      className="btn btn-success btn-sm"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -52,6 +70,4 @@ export default function Home() {
       </div>
     </div>
   );
-  
-  
 }

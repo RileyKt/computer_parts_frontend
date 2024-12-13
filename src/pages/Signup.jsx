@@ -37,7 +37,6 @@ export default function Signup() {
         throw new Error(error || 'Signup failed');
       }
 
-      // Navigate to the login page after a successful signup
       alert('Account created successfully!');
       navigate('/login');
     } catch (error) {

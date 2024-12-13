@@ -1,9 +1,10 @@
 import Cookies from 'js-cookie';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Cart() {
   const [cartProducts, setCartProducts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const cart = Cookies.get('cart') || '';
@@ -66,14 +67,31 @@ export default function Cart() {
           <p>Price: ${product.cost}</p>
           <p>Quantity: {product.quantity}</p>
           <p>Total: ${product.total.toFixed(2)}</p>
-          <button onClick={() => removeFromCart(product.product_id)}>Remove</button>
+          <button
+            onClick={() => removeFromCart(product.product_id)}
+            className="btn btn-danger btn-sm"
+          >
+            Remove
+          </button>
         </div>
       ))}
       <h3>Subtotal: ${subTotal.toFixed(2)}</h3>
       <h3>Tax: ${tax.toFixed(2)}</h3>
       <h3>Total: ${grandTotal.toFixed(2)}</h3>
-      <Link to="/">Continue Shopping</Link>
-      <Link to="/checkout">Complete Purchase</Link>
+      <div className="mt-4">
+        <button
+          onClick={() => navigate('/')}
+          className="btn btn-secondary me-2"
+        >
+          Continue Shopping
+        </button>
+        <button
+          onClick={() => navigate('/checkout')}
+          className="btn btn-primary"
+        >
+          Complete Purchase
+        </button>
+      </div>
     </div>
   );
 }
